@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Numera — 數位服務報價</title>
+<meta name="description" content="Numera 提供網站設計開發、APP 開發、後台系統、UI/UX 設計、品牌設計、電商系統等數位服務，透明模組化報價。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0B0F1A;
+    --bg2: #111827;
+    --bg3: #1a2235;
+    --fg: #F5F4F0;
+    --fg2: rgba(245,244,240,0.6);
+    --fg3: rgba(245,244,240,0.3);
+    --accent: #E8A44A;
+    --accent2: #d4943a;
+    --border: rgba(245,244,240,0.08);
+    --radius: 4px;
+    --font-serif: 'DM Serif Display', Georgia, serif;
+    --font-sans: 'DM Sans', sans-serif;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* Nav */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px; height: 72px;
+    background: rgba(11,15,26,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    transition: all 0.3s;
+  }
+  .nav-logo { font-family: var(--font-serif); font-size: 1.5rem; letter-spacing: -0.01em; color: var(--fg); text-decoration: none; }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 36px; list-style: none; }
+  .nav-links a { color: var(--fg2); text-decoration: none; font-size: 0.9rem; font-weight: 500; letter-spacing: 0.02em; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--fg); }
+  .nav-cta { display: flex; gap: 12px; align-items: center; }
+  .btn-ghost { background: none; border: 1px solid var(--border); color: var(--fg2); padding: 8px 20px; border-radius: var(--radius); font-size: 0.85rem; cursor: pointer; font-family: var(--font-sans); transition: all 0.2s; text-decoration: none; display: inline-block; }
+  .btn-ghost:hover { border-color: var(--fg3); color: var(--fg); }
+  .btn-primary { background: var(--accent); border: none; color: #0B0F1A; padding: 9px 22px; border-radius: var(--radius); font-size: 0.85rem; font-weight: 600; cursor: pointer; font-family: var(--font-sans); transition: all 0.2s; text-decoration: none; display: inline-block; letter-spacing: 0.01em; }
+  .btn-primary:hover { background: var(--accent2); transform: translateY(-1px); }
+
+  /* Hero */
+  .hero {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    padding: 120px 48px 80px;
+    position: relative; overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0; z-index: 0;
+    background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(232,164,74,0.07) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 40% at 80% 80%, rgba(100,120,200,0.05) 0%, transparent 60%);
+  }
+  .hero-inner { position: relative; z-index: 1; text-align: center; max-width: 900px; }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(232,164,74,0.1); border: 1px solid rgba(232,164,74,0.25);
+    color: var(--accent); padding: 6px 16px; border-radius: 100px;
+    font-size: 0.8rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+  .hero-tag::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.3)} }
+  .hero h1 {
+    font-family: var(--font-serif); font-size: clamp(3rem, 7vw, 5.5rem);
+    line-height: 1.08; letter-spacing: -0.02em; margin-bottom: 28px;
+    color: var(--fg);
+  }
+  .hero h1 em { font-style: italic; color: var(--accent); }
+  .hero-sub { font-size: 1.15rem; color: var(--fg2); max-width: 560px; margin: 0 auto 44px; line-height: 1.7; font-weight: 300; }
+  .hero-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+  .btn-lg { padding: 14px 32px; font-size: 1rem; border-radius: var(--radius); }
+  .hero-stats { display: flex; gap: 48px; justify-content: center; margin-top: 72px; padding-top: 48px; border-top: 1px solid var(--border); flex-wrap: wrap; }
+  .stat-item { text-align: center; }
+  .stat-num { font-family: var(--font-serif); font-size: 2.2rem; color: var(--fg); letter-spacing: -0.02em; }
+  .stat-label { font-size: 0.8rem; color: var(--fg2); margin-top: 4px; letter-spacing: 0.04em; text-transform: uppercase; }
+
+  /* Section styles */
+  section { padding: 100px 48px; max-width: 1200px; margin: 0 auto; }
+  .section-tag { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
+  .section-title { font-family: var(--font-serif); font-size: clamp(2rem, 4vw, 3rem); line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 16px; }
+  .section-sub { color: var(--fg2); font-size: 1rem; line-height: 1.7; max-width: 520px; }
+
+  /* Services */
+  #services { max-width: 100%; padding: 100px 0; }
+  .services-wrapper { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
+  .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); margin-top: 60px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .service-card {
+    background: var(--bg2); padding: 40px 36px;
+    transition: background 0.2s;
+    cursor: default;
+  }
+  .service-card:hover { background: var(--bg3); }
+  .service-icon { width: 44px; height: 44px; border-radius: 8px; background: rgba(232,164,74,0.1); border: 1px solid rgba(232,164,74,0.2); display: flex; align-items: center; justify-content: center; margin-bottom: 20px; font-size: 1.2rem; }
+  .service-title { font-family: var(--font-serif); font-size: 1.3rem; margin-bottom: 10px; }
+  .service-desc { font-size: 0.88rem; color: var(--fg2); line-height: 1.7; margin-bottom: 20px; }
+  .service-price { font-size: 0.82rem; color: var(--accent); font-weight: 600; letter-spacing: 0.04em; }
+  .service-modules { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .module-tag { font-size: 0.72rem; background: rgba(245,244,240,0.05); border: 1px solid var(--border); color: var(--fg2); padding: 3px 10px; border-radius: 100px; }
+
+  /* Quote Calculator */
+  #calculator { max-width: 100%; background: var(--bg2); padding: 0; }
+  .calc-wrapper { max-width: 1200px; margin: 0 auto; padding: 100px 48px; }
+  .calc-layout { display: grid; grid-template-columns: 1fr 420px; gap: 60px; margin-top: 60px; align-items: start; }
+  .calc-modules { display: flex; flex-direction: column; gap: 24px; }
+  .calc-cat-title { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg3); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  .calc-items { display: flex; flex-direction: column; gap: 2px; }
+  .calc-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px; border-radius: var(--radius); cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .calc-item:hover { background: rgba(245,244,240,0.04); }
+  .calc-item.selected { background: rgba(232,164,74,0.08); border-color: rgba(232,164,74,0.2); }
+  .calc-item-left { display: flex; align-items: center; gap: 12px; }
+  .calc-checkbox {
+    width: 18px; height: 18px; border-radius: 4px; border: 1.5px solid var(--fg3);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .calc-item.selected .calc-checkbox { background: var(--accent); border-color: var(--accent); }
+  .calc-item-name { font-size: 0.9rem; font-weight: 500; }
+  .calc-item-name small { display: block; font-size: 0.78rem; color: var(--fg2); font-weight: 400; margin-top: 1px; }
+  .calc-item-price { font-size: 0.88rem; color: var(--fg2); font-weight: 400; white-space: nowrap; }
+  .calc-item.selected .calc-item-price { color: var(--accent); }
+
+  /* Quote Panel */
+  .quote-panel {
+    position: sticky; top: 88px;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 8px; padding: 36px; overflow: hidden;
+  }
+  .quote-panel::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+  }
+  .quote-title { font-family: var(--font-serif); font-size: 1.3rem; margin-bottom: 24px; }
+  .quote-items { min-height: 80px; margin-bottom: 24px; }
+  .quote-line { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+  .quote-line-name { color: var(--fg2); }
+  .quote-line-price { color: var(--fg); font-weight: 500; }
+  .quote-empty { color: var(--fg3); font-size: 0.85rem; font-style: italic; }
+  .quote-divider { height: 1px; background: var(--border); margin: 20px 0; }
+  .quote-subtotal { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 0.88rem; color: var(--fg2); }
+  .quote-total { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 28px; }
+  .quote-total-label { font-size: 0.9rem; color: var(--fg2); }
+  .quote-total-price { font-family: var(--font-serif); font-size: 2rem; color: var(--fg); letter-spacing: -0.02em; }
+  .quote-total-price span { font-size: 1rem; color: var(--fg2); font-family: var(--font-sans); }
+  .quote-form { display: flex; flex-direction: column; gap: 12px; }
+  .form-input {
+    background: rgba(245,244,240,0.05); border: 1px solid var(--border);
+    color: var(--fg); padding: 11px 14px; border-radius: var(--radius);
+    font-family: var(--font-sans); font-size: 0.88rem;
+    transition: border-color 0.2s; width: 100%;
+  }
+  .form-input:focus { outline: none; border-color: rgba(232,164,74,0.4); }
+  .form-input::placeholder { color: var(--fg3); }
+  .quote-send { width: 100%; padding: 13px; background: var(--accent); color: #0B0F1A; border: none; border-radius: var(--radius); font-size: 0.9rem; font-weight: 600; cursor: pointer; font-family: var(--font-sans); transition: all 0.2s; letter-spacing: 0.01em; }
+  .quote-send:hover { background: var(--accent2); }
+  .quote-note { font-size: 0.75rem; color: var(--fg3); text-align: center; margin-top: 12px; line-height: 1.5; }
+
+  /* Portfolio */
+  .portfolio-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 60px; }
+  .portfolio-card {
+    border-radius: 8px; overflow: hidden; border: 1px solid var(--border);
+    background: var(--bg2); transition: transform 0.2s, border-color 0.2s;
+    cursor: pointer;
+  }
+  .portfolio-card:hover { transform: translateY(-4px); border-color: rgba(232,164,74,0.2); }
+  .portfolio-thumb {
+    height: 200px; background: var(--bg3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.72rem; color: var(--fg3); font-family: monospace; letter-spacing: 0.05em;
+    text-align: center; line-height: 1.8;
+    background-image: repeating-linear-gradient(0deg, transparent, transparent 19px, rgba(245,244,240,0.03) 19px, rgba(245,244,240,0.03) 20px),
+                      repeating-linear-gradient(90deg, transparent, transparent 19px, rgba(245,244,240,0.03) 19px, rgba(245,244,240,0.03) 20px);
+  }
+  .portfolio-info { padding: 20px 22px; }
+  .portfolio-cat { font-size: 0.72rem; color: var(--accent); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+  .portfolio-name { font-family: var(--font-serif); font-size: 1.1rem; margin-bottom: 8px; }
+  .portfolio-desc { font-size: 0.82rem; color: var(--fg2); line-height: 1.6; }
+
+  /* FAQ */
+  .faq-list { margin-top: 48px; display: flex; flex-direction: column; gap: 2px; }
+  .faq-item { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .faq-q {
+    padding: 20px 24px; display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer; font-weight: 500; font-size: 0.95rem;
+    transition: background 0.15s;
+  }
+  .faq-q:hover { background: rgba(245,244,240,0.03); }
+  .faq-icon { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; color: var(--accent); flex-shrink: 0; transition: transform 0.2s; }
+  .faq-item.open .faq-icon { transform: rotate(45deg); }
+  .faq-a { padding: 0 24px; max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s; font-size: 0.88rem; color: var(--fg2); line-height: 1.75; }
+  .faq-item.open .faq-a { max-height: 200px; padding: 4px 24px 20px; }
+
+  /* About */
+  .about-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; margin-top: 60px; }
+  .about-visual {
+    height: 400px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--bg2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.72rem; color: var(--fg3); font-family: monospace; letter-spacing: 0.05em;
+    text-align: center; line-height: 1.8;
+    background-image: repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(245,244,240,0.03) 39px, rgba(245,244,240,0.03) 40px),
+                      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(245,244,240,0.03) 39px, rgba(245,244,240,0.03) 40px);
+  }
+  .about-text p { color: var(--fg2); line-height: 1.8; margin-bottom: 20px; font-size: 0.95rem; }
+  .about-values { display: flex; flex-direction: column; gap: 16px; margin-top: 24px; }
+  .value-item { display: flex; gap: 14px; align-items: flex-start; }
+  .value-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-top: 8px; flex-shrink: 0; }
+  .value-text { font-size: 0.88rem; color: var(--fg2); line-height: 1.6; }
+  .value-text strong { color: var(--fg); }
+
+  /* Contact */
+  #contact { max-width: 100%; background: var(--bg2); padding: 0; }
+  .contact-wrapper { max-width: 1200px; margin: 0 auto; padding: 100px 48px; }
+  .contact-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; margin-top: 60px; }
+  .contact-info h3 { font-family: var(--font-serif); font-size: 1.8rem; margin-bottom: 20px; line-height: 1.2; }
+  .contact-info p { color: var(--fg2); font-size: 0.9rem; line-height: 1.8; margin-bottom: 32px; }
+  .contact-details { display: flex; flex-direction: column; gap: 14px; }
+  .contact-detail { display: flex; gap: 12px; align-items: center; font-size: 0.88rem; }
+  .contact-detail-icon { width: 32px; height: 32px; border-radius: 6px; background: rgba(232,164,74,0.1); border: 1px solid rgba(232,164,74,0.15); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; flex-shrink: 0; }
+  .contact-detail-text { color: var(--fg2); }
+  .contact-form { display: flex; flex-direction: column; gap: 16px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-label { font-size: 0.8rem; color: var(--fg2); font-weight: 500; letter-spacing: 0.03em; }
+  .form-textarea { resize: vertical; min-height: 120px; }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border); padding: 40px 48px;
+    display: flex; align-items: center; justify-content: space-between;
+    max-width: 100%;
+  }
+  .footer-logo { font-family: var(--font-serif); font-size: 1.2rem; color: var(--fg2); }
+  .footer-logo span { color: var(--accent); }
+  .footer-links { display: flex; gap: 28px; }
+  .footer-links a { font-size: 0.82rem; color: var(--fg3); text-decoration: none; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--fg2); }
+  .footer-copy { font-size: 0.78rem; color: var(--fg3); }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 32px; right: 32px; z-index: 999;
+    background: var(--bg3); border: 1px solid var(--border); border-left: 3px solid var(--accent);
+    padding: 16px 20px; border-radius: var(--radius);
+    font-size: 0.88rem; color: var(--fg2);
+    transform: translateX(120%); transition: transform 0.3s ease;
+    max-width: 280px;
+  }
+  .toast.show { transform: translateX(0); }
+  .toast strong { color: var(--fg); display: block; margin-bottom: 4px; }
+
+  /* Mobile hamburger */
+  .nav-hamburger {
+    display: none; flex-direction: column; gap: 5px; cursor: pointer;
+    background: none; border: none; padding: 4px;
+  }
+  .nav-hamburger span { display: block; width: 22px; height: 2px; background: var(--fg2); border-radius: 2px; transition: all 0.2s; }
+  .mobile-menu {
+    display: none; position: fixed; top: 72px; left: 0; right: 0; z-index: 99;
+    background: rgba(11,15,26,0.97); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 24px 20px; flex-direction: column; gap: 4px;
+  }
+  .mobile-menu.open { display: flex; }
+  .mobile-menu a { color: var(--fg2); text-decoration: none; font-size: 1rem; font-weight: 500; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .mobile-menu a:last-child { border-bottom: none; }
+  .mobile-menu a:hover { color: var(--fg); }
+
+  @media (max-width: 768px) {
+    nav { padding: 0 20px; }
+    .nav-links { display: none; }
+    .nav-hamburger { display: flex; }
+    section { padding: 60px 20px; }
+    .hero { padding: 100px 20px 60px; }
+    .services-grid { grid-template-columns: 1fr; }
+    .calc-layout { grid-template-columns: 1fr; }
+    .portfolio-grid { grid-template-columns: 1fr; }
+    .about-layout, .contact-layout { grid-template-columns: 1fr; gap: 40px; }
+    footer { flex-direction: column; gap: 16px; text-align: center; padding: 32px 20px; }
+    .hero-stats { gap: 24px; }
+    .services-wrapper, .calc-wrapper, .contact-wrapper { padding-left: 20px; padding-right: 20px; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav id="main-nav">
+  <a href="#" class="nav-logo">numera<span>.</span></a>
+  <ul class="nav-links">
+    <li><a href="#services">服務項目</a></li>
+    <li><a href="#calculator">線上報價</a></li>
+    <li><a href="#portfolio">作品集</a></li>
+    <li><a href="#about">關於我們</a></li>
+    <li><a href="#faq">FAQ</a></li>
+    <li><a href="#contact">聯絡</a></li>
+  </ul>
+  <div class="nav-cta">
+    <button class="nav-hamburger" id="hamburger" aria-label="選單">
+      <span></span><span></span><span></span>
+    </button>
+    <a href="#calculator" class="btn-primary" style="display:none" id="nav-quote-btn">立即報價</a>
+  </div>
+</nav>
+
+<!-- Mobile menu -->
+<nav class="mobile-menu" id="mobile-menu">
+  <a href="#services" onclick="closeMobileMenu()">服務項目</a>
+  <a href="#calculator" onclick="closeMobileMenu()">線上報價</a>
+  <a href="#portfolio" onclick="closeMobileMenu()">作品集</a>
+  <a href="#about" onclick="closeMobileMenu()">關於我們</a>
+  <a href="#faq" onclick="closeMobileMenu()">FAQ</a>
+  <a href="#contact" onclick="closeMobileMenu()">聯絡</a>
+</nav>
+
+<!-- App root -->
+<div id="root"></div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <strong>報價申請已送出！</strong>
+  我們將在 24 小時內與您聯繫。
+</div>
+
+<script>
+  // Mobile menu toggle
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobile-menu');
+  hamburger.addEventListener('click', () => {
+    mobileMenu.classList.toggle('open');
+  });
+  function closeMobileMenu() {
+    mobileMenu.classList.remove('open');
+  }
+
+  // Show/hide desktop quote button based on screen size
+  function updateNavQuoteBtn() {
+    const btn = document.getElementById('nav-quote-btn');
+    if (window.innerWidth > 768) {
+      btn.style.display = 'inline-block';
+    } else {
+      btn.style.display = 'none';
+    }
+  }
+  updateNavQuoteBtn();
+  window.addEventListener('resize', updateNavQuoteBtn);
+</script>
+
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+// ── Data ──────────────────────────────────────────────────────────────────────
+
+const SERVICES = [
+  {
+    id: 'web', icon: '⬡', title: '網站設計開發', en: 'Web Design & Development',
+    desc: '從品牌形象網站、企業官網到互動式行銷頁面，提供完整的視覺設計與前後端開發服務。',
+    priceFrom: 'NT$35,000 起',
+    modules: ['RWD 響應式', '動態效果', 'CMS 系統', 'SEO 優化']
+  },
+  {
+    id: 'app', icon: '◈', title: 'APP 開發', en: 'Mobile App Development',
+    desc: 'iOS / Android 雙平台原生或跨平台開發，覆蓋需求分析、UX 設計到上架全流程。',
+    priceFrom: 'NT$150,000 起',
+    modules: ['iOS / Android', 'React Native', 'API 串接', 'App Store 上架']
+  },
+  {
+    id: 'backend', icon: '◫', title: '後台系統開發', en: 'Backend System',
+    desc: '客製化管理後台、ERP/CRM 系統，支援複雜業務流程自動化與資料視覺化。',
+    priceFrom: 'NT$80,000 起',
+    modules: ['Dashboard', '權限管理', '報表匯出', 'API 開發']
+  },
+  {
+    id: 'uiux', icon: '◉', title: 'UI/UX 設計', en: 'UI/UX Design',
+    desc: '用戶研究、資訊架構規劃、Figma 原型設計，打造兼具美感與易用性的數位體驗。',
+    priceFrom: 'NT$25,000 起',
+    modules: ['用戶研究', 'Wireframe', 'Prototype', '設計規範']
+  },
+  {
+    id: 'brand', icon: '◇', title: '品牌設計', en: 'Brand Design',
+    desc: '品牌識別、Logo 設計、視覺系統建立，幫助您的品牌在數位環境中脫穎而出。',
+    priceFrom: 'NT$20,000 起',
+    modules: ['Logo 設計', 'CI 手冊', '社群素材', '廣告設計']
+  },
+  {
+    id: 'ecom', icon: '◎', title: '電商系統', en: 'E-Commerce',
+    desc: '完整購物車功能、金流串接、庫存管理，打造高轉換率的線上銷售平台。',
+    priceFrom: 'NT$60,000 起',
+    modules: ['購物車', '金流整合', '庫存管理', '會員系統']
+  }
+];
+
+const CALC_MODULES = [
+  {
+    category: '網站開發 / Web',
+    items: [
+      { id: 'web-basic', name: '基礎形象網站', en: 'Basic Brochure Site', price: 35000, note: '5頁以內，含RWD' },
+      { id: 'web-cms', name: '含 CMS 後台', en: 'With CMS', price: 20000, note: 'WordPress / 客製化' },
+      { id: 'web-landing', name: '活動 Landing Page', en: 'Landing Page', price: 15000, note: '單頁，動態效果' },
+      { id: 'web-multilang', name: '多語系支援', en: 'Multilingual', price: 12000, note: '中英日…' },
+    ]
+  },
+  {
+    category: 'APP 開發 / Mobile',
+    items: [
+      { id: 'app-ios', name: 'iOS App', en: 'iOS Native', price: 120000, note: 'Swift，含設計' },
+      { id: 'app-android', name: 'Android App', en: 'Android Native', price: 120000, note: 'Kotlin，含設計' },
+      { id: 'app-cross', name: '跨平台 App', en: 'Cross-Platform', price: 150000, note: 'React Native / Flutter' },
+      { id: 'app-api', name: 'API 後端串接', en: 'API Integration', price: 25000, note: '第三方服務整合' },
+    ]
+  },
+  {
+    category: 'UI/UX 設計 / Design',
+    items: [
+      { id: 'ux-research', name: '用戶研究', en: 'User Research', price: 18000, note: '訪談 + 分析報告' },
+      { id: 'ux-wire', name: 'Wireframe 線框稿', en: 'Wireframe', price: 12000, note: '資訊架構規劃' },
+      { id: 'ux-proto', name: 'Figma 互動原型', en: 'Interactive Prototype', price: 22000, note: '可點擊原型' },
+      { id: 'ux-spec', name: '設計規範文件', en: 'Design Spec', price: 8000, note: '交付給工程師' },
+    ]
+  },
+  {
+    category: '電商 & 系統 / Commerce',
+    items: [
+      { id: 'ecom-cart', name: '購物車系統', en: 'Shopping Cart', price: 45000, note: '完整電商功能' },
+      { id: 'ecom-pay', name: '金流整合', en: 'Payment Gateway', price: 15000, note: '綠界 / 藍新 / 街口' },
+      { id: 'ecom-crm', name: 'CRM 客戶管理', en: 'CRM System', price: 50000, note: '客製化後台' },
+      { id: 'ecom-report', name: '數據報表系統', en: 'Analytics Dashboard', price: 30000, note: '視覺化儀表板' },
+    ]
+  },
+];
+
+const PORTFOLIO = [
+  { cat: '電商系統', name: 'FreshMart 生鮮電商', desc: '完整購物車、金流整合、庫存管理，月交易額超過 NT$500 萬', thumb: '電商平台\n產品截圖' },
+  { cat: '企業官網', name: 'Vertex 建築設計', desc: '視差滾動動效，獲 Awwwards 提名，轉換率提升 34%', thumb: '企業官網\n首頁截圖' },
+  { cat: 'APP 開發', name: 'TrackFlow 物流 App', desc: 'React Native 跨平台，iOS/Android 雙平台，3 萬活躍用戶', thumb: 'APP\n介面截圖' },
+  { cat: 'UI/UX 設計', name: 'Helio 醫療平台', desc: '複雜工作流程簡化設計，用戶操作效率提升 60%', thumb: 'UI/UX\n設計截圖' },
+  { cat: '後台系統', name: 'DataCore ERP 系統', desc: '整合 ERP + CRM，處理每日 10 萬筆訂單資料', thumb: '後台系統\n截圖' },
+  { cat: '品牌設計', name: 'Kopio 品牌識別', desc: '完整 CI 系統設計，含 Logo、色彩規範、應用素材', thumb: '品牌設計\n作品截圖' },
+];
+
+const FAQS = [
+  { q: '報價的有效期限是多久？', a: '報價單有效期為 30 天。若需求或時程有異動，我們將重新提供更新後的報價，確保您收到最準確的估算。' },
+  { q: '專案通常需要多久時間完成？', a: '視專案規模而定：基礎網站約 4–6 週，複雜系統約 3–6 個月。我們在簽約前會提供詳細時程規劃。' },
+  { q: '付款方式為何？', a: '標準付款分三期：簽約時 30%、設計確認後 40%、專案上線後 30%。可依需求協調付款計劃。' },
+  { q: '可以只委託設計，不需要開發嗎？', a: '當然可以。我們提供純設計服務（Wireframe、UI 設計、品牌識別），交付 Figma 原始檔及設計規範文件。' },
+  { q: '上線後提供維護服務嗎？', a: '是的，我們提供月費維護方案（NT$3,000 起），包含定期更新、安全性監控、內容修改等服務。' },
+  { q: '是否支援分期或分階段開發？', a: '支援。大型專案可規劃分階段交付，先完成 MVP 核心功能，再逐步擴充，降低初期投入風險。' },
+];
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function showToast() {
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 4000);
+}
+
+// ── Components ────────────────────────────────────────────────────────────────
+
+function ServiceCard({ s }) {
+  return (
+    <div className="service-card">
+      <div className="service-icon">{s.icon}</div>
+      <div className="service-title">{s.title}</div>
+      <div style={{fontSize:'0.72rem',color:'var(--fg3)',marginBottom:'8px',letterSpacing:'0.04em'}}>{s.en}</div>
+      <div className="service-desc">{s.desc}</div>
+      <div className="service-price">{s.priceFrom}</div>
+      <div className="service-modules">{s.modules.map(m => <span key={m} className="module-tag">{m}</span>)}</div>
+    </div>
+  );
+}
+
+function Calculator() {
+  const [selected, setSelected] = useState(new Set());
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [sent, setSent] = useState(false);
+
+  const toggle = (id) => {
+    setSelected(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  const allItems = CALC_MODULES.flatMap(c => c.items);
+  const selectedItems = allItems.filter(i => selected.has(i.id));
+  const subtotal = selectedItems.reduce((s, i) => s + i.price, 0);
+  const tax = Math.round(subtotal * 0.05);
+  const total = subtotal + tax;
+
+  const fmt = n => 'NT$' + n.toLocaleString('zh-TW');
+
+  const handleSend = () => {
+    if (!name || !email) return;
+    setSent(true);
+    showToast();
+  };
+
+  return (
+    <div className="calc-layout">
+      <div className="calc-modules">
+        {CALC_MODULES.map(cat => (
+          <div className="calc-category" key={cat.category}>
+            <div className="calc-cat-title">{cat.category}</div>
+            <div className="calc-items">
+              {cat.items.map(item => (
+                <div
+                  key={item.id}
+                  className={`calc-item ${selected.has(item.id) ? 'selected' : ''}`}
+                  onClick={() => toggle(item.id)}
+                >
+                  <div className="calc-item-left">
+                    <div className="calc-checkbox">
+                      {selected.has(item.id) && (
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                          <path d="M2 5l2.5 2.5L8 3" stroke="#0B0F1A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      )}
+                    </div>
+                    <div className="calc-item-name">
+                      {item.name}
+                      <small>{item.en} · {item.note}</small>
+                    </div>
+                  </div>
+                  <div className="calc-item-price">{fmt(item.price)}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="quote-panel">
+        <div className="quote-title">報價摘要</div>
+        <div className="quote-items">
+          {selectedItems.length === 0
+            ? <div className="quote-empty">請從左側選擇服務項目</div>
+            : selectedItems.map(i => (
+                <div className="quote-line" key={i.id}>
+                  <span className="quote-line-name">{i.name}</span>
+                  <span className="quote-line-price">{fmt(i.price)}</span>
+                </div>
+              ))
+          }
+        </div>
+        {selectedItems.length > 0 && (
+          <>
+            <div className="quote-subtotal">
+              <span>小計 Subtotal</span><span>{fmt(subtotal)}</span>
+            </div>
+            <div className="quote-subtotal">
+              <span>稅金 Tax (5%)</span><span>{fmt(tax)}</span>
+            </div>
+          </>
+        )}
+        <div className="quote-divider"></div>
+        <div className="quote-total">
+          <span className="quote-total-label">預估總額</span>
+          <span className="quote-total-price">{fmt(total)}<span> TWD</span></span>
+        </div>
+
+        {!sent ? (
+          <div className="quote-form">
+            <input className="form-input" placeholder="您的姓名 Name *" value={name} onChange={e=>setName(e.target.value)} />
+            <input className="form-input" placeholder="電子郵件 Email *" type="email" value={email} onChange={e=>setEmail(e.target.value)} />
+            <input className="form-input" placeholder="聯絡電話 Phone" value={phone} onChange={e=>setPhone(e.target.value)} />
+            <button className="quote-send" onClick={handleSend}>送出詢價單 →</button>
+            <div className="quote-note">送出後 24 小時內回覆 · 免費諮詢</div>
+          </div>
+        ) : (
+          <div style={{textAlign:'center',padding:'20px 0'}}>
+            <div style={{fontSize:'2rem',marginBottom:'12px'}}>✓</div>
+            <div style={{fontSize:'0.9rem',color:'var(--fg)',marginBottom:'8px',fontWeight:500}}>詢價單已送出！</div>
+            <div style={{fontSize:'0.82rem',color:'var(--fg2)'}}>我們將於 24 小時內與您聯繫</div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function FAQ() {
+  const [open, setOpen] = useState(null);
+  return (
+    <div className="faq-list">
+      {FAQS.map((f, i) => (
+        <div key={i} className={`faq-item ${open === i ? 'open' : ''}`}>
+          <div className="faq-q" onClick={() => setOpen(open === i ? null : i)}>
+            <span>{f.q}</span>
+            <div className="faq-icon">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <line x1="7" y1="1" x2="7" y2="13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                <line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+            </div>
+          </div>
+          <div className="faq-a">{f.a}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ContactForm() {
+  const [formData, setFormData] = useState({ name:'', email:'', company:'', service:'', message:'' });
+  const [sent, setSent] = useState(false);
+
+  const set = k => e => setFormData(prev => ({...prev, [k]: e.target.value}));
+
+  const submit = () => {
+    if (!formData.name || !formData.email) return;
+    setSent(true);
+    showToast();
+  };
+
+  if (sent) return (
+    <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',height:'300px',gap:'12px',color:'var(--fg2)',textAlign:'center'}}>
+      <div style={{fontSize:'2.5rem',color:'var(--accent)'}}>✓</div>
+      <div style={{fontSize:'1rem',color:'var(--fg)',fontWeight:500}}>訊息已送出</div>
+      <div style={{fontSize:'0.85rem'}}>感謝您的聯繫，我們將於 24 小時內回覆</div>
+    </div>
+  );
+
+  return (
+    <div className="contact-form">
+      <div className="form-row">
+        <div className="form-group">
+          <label className="form-label">姓名 Name *</label>
+          <input className="form-input" value={formData.name} onChange={set('name')} />
+        </div>
+        <div className="form-group">
+          <label className="form-label">公司 Company</label>
+          <input className="form-input" value={formData.company} onChange={set('company')} />
+        </div>
+      </div>
+      <div className="form-group">
+        <label className="form-label">電子郵件 Email *</label>
+        <input className="form-input" type="email" value={formData.email} onChange={set('email')} />
+      </div>
+      <div className="form-group">
+        <label className="form-label">服務類型 Service</label>
+        <select className="form-input" value={formData.service} onChange={set('service')}>
+          <option value="">請選擇</option>
+          {SERVICES.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
+        </select>
+      </div>
+      <div className="form-group">
+        <label className="form-label">需求說明 Message</label>
+        <textarea className="form-input form-textarea" value={formData.message} onChange={set('message')} placeholder="請描述您的專案需求…" />
+      </div>
+      <button className="btn-primary btn-lg" onClick={submit} style={{width:'100%'}}>送出訊息 Send →</button>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <>
+      {/* Hero */}
+      <section className="hero" id="hero">
+        <div className="hero-bg"></div>
+        <div className="hero-inner">
+          <div className="hero-tag">數位服務 · 透明報價 · Digital Agency</div>
+          <h1>打造卓越的<br/><em>數位體驗</em></h1>
+          <p className="hero-sub">
+            從品牌識別到全端開發，Numera 提供清晰透明的模組化報價，讓您的每一分預算都發揮最大價值。
+          </p>
+          <div className="hero-actions">
+            <a href="#calculator" className="btn-primary btn-lg">立即線上報價</a>
+            <a href="#portfolio" className="btn-ghost btn-lg">查看作品集</a>
+          </div>
+          <div className="hero-stats">
+            <div className="stat-item">
+              <div className="stat-num">200+</div>
+              <div className="stat-label">完成專案</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-num">98%</div>
+              <div className="stat-label">客戶滿意度</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-num">6年</div>
+              <div className="stat-label">業界經驗</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-num">24hr</div>
+              <div className="stat-label">回覆時效</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Services */}
+      <div id="services">
+        <div className="services-wrapper">
+          <div className="section-tag">服務項目 / Services</div>
+          <h2 className="section-title">六大核心服務<br/>滿足您的數位需求</h2>
+          <p className="section-sub">每項服務均採模組化計價，您可依實際需求靈活組合，不為用不到的功能付費。</p>
+          <div className="services-grid">
+            {SERVICES.map(s => <ServiceCard key={s.id} s={s} />)}
+          </div>
+        </div>
+      </div>
+
+      {/* Calculator */}
+      <div id="calculator">
+        <div className="calc-wrapper">
+          <div className="section-tag">線上報價計算機 / Quote Calculator</div>
+          <h2 className="section-title">即時計算您的<br/>專案報價</h2>
+          <p className="section-sub">勾選所需服務模組，系統即時計算費用。完成後可直接送出詢價申請。</p>
+          <Calculator />
+        </div>
+      </div>
+
+      {/* Portfolio */}
+      <section id="portfolio">
+        <div className="section-tag">作品集 / Portfolio</div>
+        <h2 className="section-title">精選案例展示</h2>
+        <p className="section-sub">每個專案背後都有我們對品質的執著與對細節的堅持。</p>
+        <div className="portfolio-grid">
+          {PORTFOLIO.map((p, i) => (
+            <div key={i} className="portfolio-card">
+              <div className="portfolio-thumb">{p.thumb}</div>
+              <div className="portfolio-info">
+                <div className="portfolio-cat">{p.cat}</div>
+                <div className="portfolio-name">{p.name}</div>
+                <div className="portfolio-desc">{p.desc}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* About */}
+      <section id="about">
+        <div className="section-tag">關於我們 / About</div>
+        <div className="about-layout">
+          <div className="about-text">
+            <h2 className="section-title">專業團隊<br/>驅動卓越成果</h2>
+            <p>Numera 是一個由設計師、工程師與策略顧問組成的精英數位團隊，專注於為中小企業提供高品質的數位解決方案。</p>
+            <p>我們相信：好的設計不只是視覺，更是解決問題的方式。透過透明的報價機制，讓每位客戶都能清楚了解預算的去向。</p>
+            <div className="about-values">
+              {[
+                ['透明誠信', '每一筆費用清晰列明，無隱藏費用'],
+                ['品質保證', '嚴格的 Code Review 與設計審查流程'],
+                ['敏捷交付', '兩週一個 Sprint，持續交付可用成果'],
+                ['長期夥伴', '上線後持續支援，與您共同成長'],
+              ].map(([t,d]) => (
+                <div key={t} className="value-item">
+                  <div className="value-dot"></div>
+                  <div className="value-text"><strong>{t}</strong> — {d}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="about-visual">
+            團隊照片<br/>或辦公室<br/>形象照
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section id="faq">
+        <div className="section-tag">常見問題 / FAQ</div>
+        <h2 className="section-title">您可能想知道的</h2>
+        <p className="section-sub">找不到答案？隨時透過聯絡表單詢問我們。</p>
+        <FAQ />
+      </section>
+
+      {/* Contact */}
+      <div id="contact">
+        <div className="contact-wrapper">
+          <div className="section-tag">聯絡我們 / Contact</div>
+          <div className="contact-layout">
+            <div className="contact-info">
+              <h3>讓我們一起<br/>打造您的下一個專案</h3>
+              <p>無論您有明確的需求規格，或只是有個模糊的想法，我們都很樂意與您探討可能性。</p>
+              <div className="contact-details">
+                {[
+                  ['📧', 'hello@numera.tw'],
+                  ['📞', '+886 2 2345-6789'],
+                  ['📍', '台北市信義區松仁路 100 號'],
+                  ['⏰', '週一至週五 09:00–18:00'],
+                ].map(([icon, text]) => (
+                  <div key={text} className="contact-detail">
+                    <div className="contact-detail-icon">{icon}</div>
+                    <span className="contact-detail-text">{text}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <ContactForm />
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <footer>
+        <div className="footer-logo">numera<span>.</span></div>
+        <div className="footer-links">
+          <a href="#services">服務</a>
+          <a href="#calculator">報價</a>
+          <a href="#portfolio">作品</a>
+          <a href="#about">關於</a>
+          <a href="#contact">聯絡</a>
+        </div>
+        <div className="footer-copy">© 2026 Numera. All rights reserved.</div>
+      </footer>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
